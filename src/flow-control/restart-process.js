@@ -6,9 +6,10 @@ const BaseHandler = require('./base-handler');
 
 module.exports = class RestartProcess extends BaseHandler {
     constructor({ delay, tries, logger, scheduler }) {
+        super({ logger });
+
         this.delay = +delay || defaults.restartDelay;
         this.tries = +tries || defaults.restartTries;
-        this.logger = logger;
         this.scheduler = scheduler;
     }
 
