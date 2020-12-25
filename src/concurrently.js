@@ -55,7 +55,11 @@ module.exports = (commands, options) => {
         maybeRunMore(commandsLeft);
     }
 
-    return new CompletionListener({ successCondition: options.successCondition }).listen(commands);
+    return new CompletionListener({ successCondition: options.successCondition })
+        .listen(commands)
+        .finally(() => {
+            options.controllers.forEach((controller) => controller.onFinish());
+        });
 };
 
 function mapToCommandInfo(command) {
