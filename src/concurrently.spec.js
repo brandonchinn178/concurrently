@@ -117,3 +117,21 @@ it('merges extra env vars into each command', () => {
         env: expect.not.objectContaining({ foo: expect.anything() }) 
     }));
 });
+
+it('runs onFinish hook after all commands run', async () => {
+    const promise = create(['foo', 'bar'], { maxProcesses: 1 });
+    expect(spawn).toHaveBeenCalledTimes(1);
+    expect(controllers[0].onFinish).not.toHaveBeenCalled();
+    expect(controllers[1].onFinish).not.toHaveBeenCalled();
+
+    processes[0].emit('close', 0, null);
+    expect(spawn).toHaveBeenCalledTimes(2);
+    expect(controllers[0].onFinish).not.toHaveBeenCalled();
+    expect(controllers[1].onFinish).not.toHaveBeenCalled();
+
+    processes[1].emit('close', 0, null);
+    await promise;
+
+    expect(controllers[0].onFinish).toHaveBeenCalled();
+    expect(controllers[1].onFinish).toHaveBeenCalled();
+})
